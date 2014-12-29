@@ -7,7 +7,7 @@ from reportlab.lib.units import inch, mm
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
  
-
+# http://www.reportlab.com/docs/reportlab-userguide.pdf
 # http://www.blog.pythonlibrary.org/2013/08/09/reportlab-how-to-combine-static-content-and-multipage-tables/ 
 ########################################################################
 class Test(object):
