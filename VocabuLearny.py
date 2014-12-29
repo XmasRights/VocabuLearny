@@ -1,6 +1,8 @@
 import sys, getopt
 import csv
 
+from reportlab.pdfgen import canvas
+
 def main(argv):
 	inputfile = ''
 	outputfile = ''
@@ -20,16 +22,23 @@ def main(argv):
 		elif opt in ("-o", "--ofile"):
 			outputfile = arg
 
-	data = parseInputFile(inputfile)
+	# data = parseInputFile(inputfile)
+	c = canvas.Canvas("hello.pdf")
+	generateOutput(c)
+	c.showPage()
+	c.save()
+
 
 def parseInputFile(inFile):
 	data = []
-	with open(inFile, 'rb') as csvfile:
-		fileReader = csv.reader(csvfile, delimiter=",", quotechar='"')
-		for row in fileReader:
-			data.append(row)
+
+	fileReader = csv.reader(open(inFile, 'rb'))
+	for row in fileReader:
+		data.append(row)
 	return data
 
+def generateOutput(output):
+	output.drawString(100, 100, "Hello World")
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
