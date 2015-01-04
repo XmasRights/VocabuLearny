@@ -32,12 +32,12 @@ class DocumentMaker(object):
         return x, y
  
     #----------------------------------------------------------------------
-    def run(self, appData, heading = "Worksheet"):
+    def run(self, appData, heading = "Worksheet", outputName = "test.pdf"):
         """
         Run the report
         """
         self.heading = heading
-        self.doc = SimpleDocTemplate("test.pdf")
+        self.doc = SimpleDocTemplate(outputName)
         self.story = [Spacer(1, 0.1*inch)]
         self.createLineItems(appData)
  
@@ -75,8 +75,7 @@ class DocumentMaker(object):
         Create the line items
         """
         headers = appData[0]
-        appData.pop(0)
-        table_data = self.randData(appData, 1)
+        table_data = self.randData(appData[1:], 1)
 
         header_font_size = 14
         table_font_size = 12
@@ -113,28 +112,33 @@ class DocumentMaker(object):
 def main(argv):
 	inputfile = ''
 	outputfile = ''
+	count = 1
 
 	try:
-		opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
+		opts, args = getopt.getopt(argv, "hi:o:c:", ["ifile=", "ofile=", "ocount"])
 	except getopt.GetoptError:
-		print "usage: VocabuLearny.py -i <input file> -o <outputfile>\n"
+		print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets>\n"
 		sys.exit(2)
 
 	for opt, arg in opts:
 		if opt == '-h':
-			print "usage: VocabuLearny.py -i <input file> -o <outputfile>\n"
+			print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets>\n"
 			sys.exit(2)
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
 		elif opt in ("-o", "--ofile"):
 			outputfile = arg
+		elif opt in ("-c"):
+			count = int(arg)
 
 	data = parseInputFile(inputfile)
 	heading = data[0][0]
 	data.pop(0)
 
 	t = DocumentMaker()
-	t.run(data, heading)
+	for x in range(count):
+		title = heading + " " + str(x)
+		t.run(data, title, title + ".pdf")
 
 
 def parseInputFile(inFile):
