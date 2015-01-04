@@ -1,0 +1,9 @@
+Korean Days of the Week
+English,Korean,Pronunciation
+Monday,월 요일,Hwol yo eel
+Tuesday,화 요일,Hwa yo eel
+Wednesday,수 요일,Soo yo eel
+Thursday,목 요일,Mok yo eel
+Friday,금 요일,Gum yo eel
+Saturday,토 요일,Toe yo eel
+Sunday,일 요일,Eel yo ee

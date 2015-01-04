@@ -43,7 +43,6 @@ class DocumentMaker(object):
         self.createLineItems(appData)
  
         self.doc.build(self.story, onFirstPage=self.createDocument)
-        print "finished!"
  
     #----------------------------------------------------------------------
     def createDocument(self, canvas, doc):
