@@ -32,10 +32,11 @@ class DocumentMaker(object):
         return x, y
  
     #----------------------------------------------------------------------
-    def run(self, appData, heading = "Worksheet", outputName = "test.pdf"):
+    def run(self, appData, heading = "Worksheet", outputName = "test.pdf", removeCount = 1):
         """
         Run the report
         """
+        self.removeCount = removeCount
         self.heading = heading
         self.doc = SimpleDocTemplate(outputName)
         self.story = [Spacer(1, 0.1*inch)]
@@ -61,10 +62,10 @@ class DocumentMaker(object):
  	
  	#----------------------------------------------------------------------
 
-    def randData(self, appData, hideItems):
+    def randData(self, appData):
  		output = []
  		for line in list(x for x in appData):
- 			change_locations = set(sample(range(len(line)), hideItems))
+ 			change_locations = set(sample(range(len(line)), self.removeCount))
  			changed = ("" if i in change_locations else c for i,c in enumerate(line))
  			output.append(list(x for x in changed))
  		return output
@@ -75,7 +76,7 @@ class DocumentMaker(object):
         Create the line items
         """
         headers = appData[0]
-        table_data = self.randData(appData[1:], 1)
+        table_data = self.randData(appData[1:])
 
         header_font_size = 14
         table_font_size = 12
@@ -113,23 +114,29 @@ def main(argv):
 	inputfile = ''
 	outputfile = ''
 	count = 1
+	answers = 0
+	blank_cells = 1
 
 	try:
-		opts, args = getopt.getopt(argv, "hi:o:c:", ["ifile=", "ofile=", "ocount"])
+		opts, args = getopt.getopt(argv, "hi:o:c:b:a:", ["ifile=", "ofile=", "ocount", "oblanks", "oanswers"])
 	except getopt.GetoptError:
-		print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets>\n"
+		print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets> -b <number of blank cells per row> -a <create answer sheet>\n"
 		sys.exit(2)
 
 	for opt, arg in opts:
 		if opt == '-h':
-			print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets>\n"
+			print "usage: VocabuLearny.py -i <input file> -o <outputfile> -c <number of output sheets> -b <number of blank cells per row> -a <create answer sheet>\n"
 			sys.exit(2)
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
 		elif opt in ("-o", "--ofile"):
 			outputfile = arg
-		elif opt in ("-c"):
+		elif opt in ("-c", "ocount"):
 			count = int(arg)
+		elif opt in ("-b", "oblanks"):
+			blank_cells = int(arg)
+		elif opt in ("-a", "oanswers"):
+			answers = 1
 
 	data = parseInputFile(inputfile)
 	heading = data[0][0]
@@ -138,8 +145,13 @@ def main(argv):
 	t = DocumentMaker()
 	for x in range(count):
 		title = heading + " " + str(x)
-		t.run(data, title, title + ".pdf")
+		t.run(data, title, title + ".pdf", blank_cells)
 
+	if answers:
+		page_header = heading + " Answers"
+		file_title = heading + " Answers.pdf"
+		page_blank_cells = 0
+		t.run(data, page_header, file_title, page_blank_cells)
 
 def parseInputFile(inFile):
 	data = []
