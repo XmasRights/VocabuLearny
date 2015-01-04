@@ -12,7 +12,9 @@ from random import sample
 # http://www.reportlab.com/docs/reportlab-userguide.pdf
 # http://www.blog.pythonlibrary.org/2013/08/09/reportlab-how-to-combine-static-content-and-multipage-tables/ 
 ########################################################################
+
 class DocumentMaker(object):
+
     """"""
  
     #----------------------------------------------------------------------
@@ -30,10 +32,11 @@ class DocumentMaker(object):
         return x, y
  
     #----------------------------------------------------------------------
-    def run(self, appData):
+    def run(self, appData, heading = "Worksheet"):
         """
         Run the report
         """
+        self.heading = heading
         self.doc = SimpleDocTemplate("test.pdf")
         self.story = [Spacer(1, 0.1*inch)]
         self.createLineItems(appData)
@@ -51,7 +54,7 @@ class DocumentMaker(object):
         normal = self.styles["Normal"]
         centered = ParagraphStyle(name="centered", alignment=TA_CENTER)
  
-        header_text = "<font size=%s><b>This is a test header</b></font>" % (font_size)
+        header_text = "<font size=%s><b>%s</b></font>" % (font_size, self.heading)
         p = Paragraph(header_text, centered)
         p.wrapOn(self.c, self.width, self.height)
         p.drawOn(self.c, *self.coord(0, 12, mm))
@@ -127,9 +130,11 @@ def main(argv):
 			outputfile = arg
 
 	data = parseInputFile(inputfile)
+	heading = data[0][0]
+	data.pop(0)
 
 	t = DocumentMaker()
-	t.run(data)
+	t.run(data, heading)
 
 
 def parseInputFile(inFile):
