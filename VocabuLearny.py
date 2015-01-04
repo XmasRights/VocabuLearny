@@ -7,11 +7,12 @@ from reportlab.lib.units import inch, mm
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, SimpleDocTemplate, Spacer
 from reportlab.lib import colors
- 
+from random import sample
+
 # http://www.reportlab.com/docs/reportlab-userguide.pdf
 # http://www.blog.pythonlibrary.org/2013/08/09/reportlab-how-to-combine-static-content-and-multipage-tables/ 
 ########################################################################
-class Test(object):
+class DocumentMaker(object):
     """"""
  
     #----------------------------------------------------------------------
@@ -23,9 +24,6 @@ class Test(object):
     #----------------------------------------------------------------------
     def coord(self, x, y, unit=1):
         """
-
-http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
-
         Helper class to help position flowables in Canvas objects
         """
         x, y = x * unit, self.height -  y * unit
@@ -57,7 +55,17 @@ http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
         p = Paragraph(header_text, centered)
         p.wrapOn(self.c, self.width, self.height)
         p.drawOn(self.c, *self.coord(0, 12, mm))
- 
+ 	
+ 	#----------------------------------------------------------------------
+
+    def randData(self, appData, hideItems):
+ 		output = []
+ 		for line in list(x for x in appData):
+ 			change_locations = set(sample(range(len(line)), hideItems))
+ 			changed = ("" if i in change_locations else c for i,c in enumerate(line))
+ 			output.append(list(x for x in changed))
+ 		return output
+
     #----------------------------------------------------------------------
     def createLineItems(self, appData):
         """
@@ -65,6 +73,8 @@ http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
         """
         headers = appData[0]
         appData.pop(0)
+        table_data = self.randData(appData, 1)
+
         header_font_size = 14
         table_font_size = 12
         column_width = 140
@@ -83,7 +93,7 @@ http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
 
         # Format Table Data
         formatted_line_data = []
-        for line in appData:
+        for line in table_data:
             for item in line:
                 ptext = "<font size=%s>%s</font>" % (table_font_size, item)
                 p = Paragraph(ptext, centered)
@@ -96,7 +106,6 @@ http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
         self.story.append(table)
  
 #----------------------------------------------------------------------
-
 
 def main(argv):
 	inputfile = ''
@@ -119,7 +128,7 @@ def main(argv):
 
 	data = parseInputFile(inputfile)
 
-	t = Test()
+	t = DocumentMaker()
 	t.run(data)
 
 
